@@ -28,3 +28,4 @@ C:\Users\ange.gohouri\Connect-Four-game\obj\Debug\net8.0\refint\ConnectFour.dll
 C:\Users\ange.gohouri\Connect-Four-game\obj\Debug\net8.0\ConnectFour.pdb
 C:\Users\ange.gohouri\Connect-Four-game\obj\Debug\net8.0\ConnectFour.genruntimeconfig.cache
 C:\Users\ange.gohouri\Connect-Four-game\obj\Debug\net8.0\ref\ConnectFour.dll
+C:\Users\ange.gohouri\Connect-Four-game\obj\Debug\net8.0\ConnectFour.sourcelink.json
