@@ -1,38 +1,116 @@
 @using System.Drawing
 @inject GameState State
 
-<HeadContent>
-    <style>
-        :root {
-            --board-bg: @ColorTranslator.ToHtml(BoardColor);
-            --player1: @ColorTranslator.ToHtml(Player1Color);
-            --player2: @ColorTranslator.ToHtml(Player2Color);
-        }
-    </style>
-</HeadContent>
+<style>
+    .board-wrapper .board .container span {
+        box-shadow: 0 0 0 3em @ColorTranslator.ToHtml(BoardColor) !important;
+    }
+    .board-wrapper .board {
+        border-left: 10px solid @ColorTranslator.ToHtml(BoardColor) !important;
+    }
+    .board-wrapper .player1 {
+        background-color: @ColorTranslator.ToHtml(Player1Color) !important;
+        box-shadow: 0 0 0 4px @ColorTranslator.ToHtml(Player1Color) !important;
+    }
+    .board-wrapper .player2 {
+        background-color: @ColorTranslator.ToHtml(Player2Color) !important;
+        box-shadow: 0 0 0 4px @ColorTranslator.ToHtml(Player2Color) !important;
+    }
+    .player-indicator.p1 {
+        background-color: @ColorTranslator.ToHtml(Player1Color) !important;
+    }
+    .player-indicator.p2 {
+        background-color: @ColorTranslator.ToHtml(Player2Color) !important;
+    }
+    .player1-streak {
+        border-color: @ColorTranslator.ToHtml(Player1Color) !important;
+    }
+    .player2-streak {
+        border-color: @ColorTranslator.ToHtml(Player2Color) !important;
+    }
+</style>
 
-<div class="game-container">
+<div class="game-container" role="main" aria-label="Connect Four Game">
     <div class="board-section">
-        <h1>🔴 Connect Four 🔵</h1>
+        <h1 tabindex="-1">🔴 Connect Four 🔵</h1>
         
-        <nav>
+        <!-- Win Streak Display -->
+        <div class="win-streak-container" role="status" aria-live="polite">
+            <div class="streak player1-streak" aria-label="Player 1 consecutive wins: @State.Player1ConsecutiveWins">
+                <span class="streak-label">🔴 P1 Streak:</span>
+                <span class="streak-count">@State.Player1ConsecutiveWins</span>
+            </div>
+            <div class="streak player2-streak" aria-label="Player 2 consecutive wins: @State.Player2ConsecutiveWins">
+                <span class="streak-label">🔵 P2 Streak:</span>
+                <span class="streak-count">@State.Player2ConsecutiveWins</span>
+            </div>
+        </div>
+
+        <!-- Color Picker Section -->
+        <details class="color-picker-section">
+            <summary>🎨 Customize Colors</summary>
+            <div class="color-pickers" role="group" aria-label="Color customization options">
+                <div class="color-option">
+                    <label for="player1-color">Player 1:</label>
+                    <input type="color" 
+                           id="player1-color" 
+                           value="@ColorTranslator.ToHtml(Player1Color)" 
+                           @onchange="e => UpdatePlayer1Color(e.Value?.ToString())" 
+                           aria-label="Select Player 1 piece color" />
+                </div>
+                <div class="color-option">
+                    <label for="player2-color">Player 2:</label>
+                    <input type="color" 
+                           id="player2-color" 
+                           value="@ColorTranslator.ToHtml(Player2Color)" 
+                           @onchange="e => UpdatePlayer2Color(e.Value?.ToString())" 
+                           aria-label="Select Player 2 piece color" />
+                </div>
+                <div class="color-option">
+                    <label for="board-color">Board:</label>
+                    <input type="color" 
+                           id="board-color" 
+                           value="@ColorTranslator.ToHtml(BoardColor)" 
+                           @onchange="e => UpdateBoardColor(e.Value?.ToString())" 
+                           aria-label="Select board color" />
+                </div>
+                <button class="reset-colors-btn" @onclick="ResetColors" aria-label="Reset colors to default">
+                    ↩️ Reset Colors
+                </button>
+            </div>
+        </details>
+        
+        <nav role="toolbar" aria-label="Column selection buttons">
             @for (byte i = 0; i < 7; i++)
             {
                 var col = i;
-                <span title="Click to play a piece" @onclick="() => PlayPiece(col)">🔽</span>
+                var colNum = i + 1;
+                <span title="Drop piece in column @colNum" 
+                      @onclick="() => PlayPiece(col)"
+                      role="button"
+                      tabindex="0"
+                      @onkeydown="e => HandleKeyDown(e, col)"
+                      aria-label="Drop piece in column @colNum">
+                    🔽
+                </span>
             }
         </nav>
 
-        <article>
-            @winnerMessage  
-            <button style="@ResetStyle" @onclick="ResetGame">🔄 Reset Game</button>
+        <article role="status" aria-live="polite" aria-atomic="true">
+            <span class="winner-message">@winnerMessage</span>
+            <button style="@ResetStyle" 
+                    @onclick="ResetGame" 
+                    aria-label="Reset game and start new round"
+                    class="reset-btn">
+                🔄 Reset Game
+            </button>
             <br />
-            <span class="alert-danger">@errorMessage</span>
-            <span class="alert-info">@CurrentTurn</span>
+            <span class="alert-danger" role="alert" aria-live="assertive">@errorMessage</span>
+            <span class="alert-info" aria-label="Current turn indicator">@CurrentTurn</span>
         </article>
 
-        <div>
-            <div class="board">
+        <div class="board-wrapper" role="grid" aria-label="Connect Four game board with 6 rows and 7 columns">
+            <div class="board" aria-hidden="true">
                 @for (var i = 0; i < 42; i++)
                 {
                     <span class="container">
@@ -42,14 +120,19 @@
             </div>
             @for (var i = 0; i < 42; i++)
             {
-                <span class="@pieces[i]"></span>
+                var row = i / 7 + 1;
+                var col = i % 7 + 1;
+                var pieceClass = pieces[i];
+                var ariaLabel = string.IsNullOrEmpty(pieceClass) ? $"Empty cell at row {row}, column {col}" : 
+                    (pieceClass.Contains("player1") ? $"Player 1 piece at row {row}, column {col}" : $"Player 2 piece at row {row}, column {col}");
+                <span class="@pieceClass" role="gridcell" aria-label="@ariaLabel"></span>
             }
         </div>
     </div>
 
     <div class="history-section">
-        <h3>📋 Move History</h3>
-        <div class="move-list">
+        <h3 id="move-history-title">📋 Move History</h3>
+        <div class="move-list" role="log" aria-labelledby="move-history-title" aria-live="polite">
             @if (State.MoveHistory.Count == 0)
             {
                 <p class="no-moves">No moves yet. Start playing!</p>
@@ -90,18 +173,25 @@
     private string[] pieces = new string[42];
     private string winnerMessage = string.Empty;
     private string errorMessage = string.Empty;
+    private bool winRecorded = false;
+
+    // Default colors
+    private static readonly Color DefaultBoardColor = ColorTranslator.FromHtml("#FFD700");
+    private static readonly Color DefaultPlayer1Color = ColorTranslator.FromHtml("#FF0000");
+    private static readonly Color DefaultPlayer2Color = ColorTranslator.FromHtml("#0000FF");
 
     [Parameter]
-    public Color BoardColor { get; set; } = ColorTranslator.FromHtml("yellow");
+    public Color BoardColor { get; set; } = DefaultBoardColor;
 
     [Parameter]
-    public Color Player1Color { get; set; } = ColorTranslator.FromHtml("red");
+    public Color Player1Color { get; set; } = DefaultPlayer1Color;
 
     [Parameter]
-    public Color Player2Color { get; set; } = ColorTranslator.FromHtml("blue");
+    public Color Player2Color { get; set; } = DefaultPlayer2Color;
 
     private string CurrentTurn => (winnerMessage == string.Empty) ? $"Player {State.PlayerTurn}'s Turn" : "";
     private string ResetStyle => (winnerMessage == string.Empty) ? "display: none;" : "";
+    private bool IsGameOver => !string.IsNullOrEmpty(winnerMessage);
 
     protected override void OnInitialized()
     {
@@ -110,6 +200,8 @@
 
     private void PlayPiece(byte col)
     {
+        if (IsGameOver) return;
+        
         errorMessage = string.Empty;
         try
         {
@@ -123,13 +215,72 @@
             errorMessage = ex.Message;
         }
 
-        winnerMessage = State.CheckForWin() switch
+        var winState = State.CheckForWin();
+        winnerMessage = winState switch
         {
             GameState.WinState.Player1_Wins => "🎉 Player 1 Wins!",
             GameState.WinState.Player2_Wins => "🎉 Player 2 Wins!",
             GameState.WinState.Tie => "🤝 It's a tie!",
             _ => ""
         };
+
+        // Record the win for streak tracking (only once per game)
+        if (!winRecorded && winState != GameState.WinState.No_Winner)
+        {
+            if (winState == GameState.WinState.Player1_Wins)
+            {
+                State.RecordWin(1);
+            }
+            else if (winState == GameState.WinState.Player2_Wins)
+            {
+                State.RecordWin(2);
+            }
+            // Tie doesn't affect streaks
+            winRecorded = true;
+        }
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e, byte col)
+    {
+        if (e.Key == "Enter" || e.Key == " ")
+        {
+            PlayPiece(col);
+        }
+    }
+
+    private void UpdatePlayer1Color(string? colorHex)
+    {
+        if (!string.IsNullOrEmpty(colorHex))
+        {
+            Player1Color = ColorTranslator.FromHtml(colorHex);
+            StateHasChanged();
+        }
+    }
+
+    private void UpdatePlayer2Color(string? colorHex)
+    {
+        if (!string.IsNullOrEmpty(colorHex))
+        {
+            Player2Color = ColorTranslator.FromHtml(colorHex);
+            StateHasChanged();
+        }
+    }
+
+    private void UpdateBoardColor(string? colorHex)
+    {
+        if (!string.IsNullOrEmpty(colorHex))
+        {
+            BoardColor = ColorTranslator.FromHtml(colorHex);
+            StateHasChanged();
+        }
+    }
+
+    private void ResetColors()
+    {
+        BoardColor = DefaultBoardColor;
+        Player1Color = DefaultPlayer1Color;
+        Player2Color = DefaultPlayer2Color;
+        StateHasChanged();
     }
 
     void ResetGame()
@@ -138,5 +289,6 @@
         winnerMessage = string.Empty;
         errorMessage = string.Empty;
         pieces = new string[42];
+        winRecorded = false;
     }
 }

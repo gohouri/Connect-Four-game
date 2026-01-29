@@ -47,6 +47,42 @@ public class GameState
     public List<Move> MoveHistory { get; private set; } = new();
 
     /// <summary>
+    /// Consecutive wins for Player 1
+    /// </summary>
+    public int Player1ConsecutiveWins { get; private set; } = 0;
+
+    /// <summary>
+    /// Consecutive wins for Player 2
+    /// </summary>
+    public int Player2ConsecutiveWins { get; private set; } = 0;
+
+    /// <summary>
+    /// Records a win for a player and updates consecutive win streaks
+    /// </summary>
+    public void RecordWin(int player)
+    {
+        if (player == 1)
+        {
+            Player1ConsecutiveWins++;
+            Player2ConsecutiveWins = 0;
+        }
+        else if (player == 2)
+        {
+            Player2ConsecutiveWins++;
+            Player1ConsecutiveWins = 0;
+        }
+    }
+
+    /// <summary>
+    /// Resets consecutive wins for both players
+    /// </summary>
+    public void ResetConsecutiveWins()
+    {
+        Player1ConsecutiveWins = 0;
+        Player2ConsecutiveWins = 0;
+    }
+
+    /// <summary>
     /// Pre-calculate all possible winning combinations
     /// </summary>
     public static void CalculateWinningPlaces()

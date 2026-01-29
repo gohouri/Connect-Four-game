@@ -3,6 +3,134 @@ div {
     position: relative;
 }
 
+/* ========== Win Streak Display ========== */
+.win-streak-container {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+    margin: 0.5em 0 1em 0;
+    padding: 0.5em;
+}
+
+.streak {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.5em 1em;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.player1-streak {
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(255, 0, 0, 0.1));
+    border: 2px solid #FF0000;
+}
+
+.player2-streak {
+    background: linear-gradient(135deg, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 0.1));
+    border: 2px solid #0000FF;
+}
+
+.streak-label {
+    font-size: 0.9em;
+}
+
+.streak-count {
+    font-size: 1.4em;
+    min-width: 1.5em;
+    text-align: center;
+    background: white;
+    border-radius: 50%;
+    padding: 0.2em 0.4em;
+}
+
+/* ========== Color Picker Section ========== */
+.color-picker-section {
+    margin: 1em 0;
+    padding: 0.5em;
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+    border-radius: 8px;
+    max-width: 30em;
+}
+
+.color-picker-section summary {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0.5em;
+    user-select: none;
+}
+
+.color-picker-section summary:hover {
+    color: #0066cc;
+}
+
+.color-picker-section summary:focus {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+}
+
+.color-pickers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    padding: 1em;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3em;
+}
+
+.color-option label {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #333;
+}
+
+.color-option input[type="color"] {
+    width: 50px;
+    height: 40px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.color-option input[type="color"]:hover {
+    border-color: #666;
+    transform: scale(1.05);
+}
+
+.color-option input[type="color"]:focus {
+    outline: 3px solid #0066cc;
+    outline-offset: 2px;
+}
+
+.reset-colors-btn {
+    padding: 0.5em 1em;
+    background: #666;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: background 0.2s;
+}
+
+.reset-colors-btn:hover {
+    background: #444;
+}
+
+.reset-colors-btn:focus {
+    outline: 3px solid #0066cc;
+    outline-offset: 2px;
+}
+
 /* Drop buttons navigation */
 nav {
     top: 4em;
@@ -19,6 +147,52 @@ nav span {
     font-size: 1em;
 }
 
+nav span:hover {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+nav span:focus {
+    outline: 3px solid #0066cc;
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+/* Reset button styling */
+.reset-btn {
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 0.5em;
+    transition: all 0.2s ease;
+}
+
+.reset-btn:hover {
+    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+    transform: scale(1.05);
+}
+
+.reset-btn:focus {
+    outline: 3px solid #0066cc;
+    outline-offset: 2px;
+}
+
+.winner-message {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #2d7d2d;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
 /* Game board */
 div.board {
     margin-top: 1em;
@@ -32,7 +206,7 @@ div.board {
     z-index: -5;
     row-gap: 0;
     pointer-events: none;
-    border-left: 10px solid var(--board-bg);
+    border-left: 10px solid #FFD700;
 }
 
 span.container {
@@ -51,7 +225,7 @@ span.container {
     width: 3.5em;
     height: 3.5em;
     border-radius: 50%;
-    box-shadow: 0 0 0 3em var(--board-bg);
+    box-shadow: 0 0 0 3em #FFD700;
     left: 0px;
     position: absolute;
     display: block;
@@ -72,19 +246,19 @@ span.container {
 }
 
 .player1 {
-    background-color: var(--player1);
+    background-color: #FF0000;
     animation-timing-function: cubic-bezier(.5, 0.05, 1, .5);
     animation-iteration-count: 1;
     animation-fill-mode: forwards;
-    box-shadow: 0 0 0 4px var(--player1);
+    box-shadow: 0 0 0 4px #FF0000;
 }
 
 .player2 {
-    background-color: var(--player2);
+    background-color: #0000FF;
     animation-timing-function: cubic-bezier(.5, 0.05, 1, .5);
     animation-iteration-count: 1;
     animation-fill-mode: forwards;
-    box-shadow: 0 0 0 4px var(--player2);
+    box-shadow: 0 0 0 4px #0000FF;
 }
 
 /* Column positions */
@@ -291,12 +465,12 @@ span.container {
 }
 
 .player-indicator.p1 {
-    background-color: var(--player1);
+    background-color: #FF0000;
     color: white;
 }
 
 .player-indicator.p2 {
-    background-color: var(--player2);
+    background-color: #0000FF;
     color: white;
 }
 
@@ -319,4 +493,113 @@ span.container {
         max-width: 30em;
         max-height: 300px;
     }
+
+    .win-streak-container {
+        flex-direction: column;
+        gap: 0.5em;
+    }
+
+    .color-pickers {
+        flex-direction: column;
+    }
+}
+
+/* ========== Accessibility Enhancements ========== */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .drop-button {
+        border: 3px solid black;
+    }
+
+    .player1 {
+        border: 3px solid black;
+    }
+
+    .player2 {
+        border: 3px solid white;
+    }
+
+    .streak {
+        border-width: 3px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .player1, .player2 {
+        animation: none;
+        transform: translateY(21.27em);
+    }
+
+    .drop1 { transform: translateY(1.27em); }
+    .drop2 { transform: translateY(5.27em); }
+    .drop3 { transform: translateY(9.27em); }
+    .drop4 { transform: translateY(13.27em); }
+    .drop5 { transform: translateY(17.27em); }
+    .drop6 { transform: translateY(21.27em); }
+
+    .winner-message {
+        animation: none;
+    }
+
+    .drop-button:hover:not(:disabled),
+    .reset-colors-btn:hover,
+    .reset-btn:hover,
+    .color-option input[type="color"]:hover {
+        transform: none;
+    }
+}
+
+/* Focus visible for keyboard users */
+.drop-button:focus-visible,
+.reset-btn:focus-visible,
+.reset-colors-btn:focus-visible,
+input[type="color"]:focus-visible,
+summary:focus-visible {
+    outline: 3px solid #0066cc;
+    outline-offset: 3px;
+}
+
+/* Skip link for keyboard navigation (hidden but accessible) */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Ensure sufficient color contrast for alerts */
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.alert-info {
+    color: #004085;
+    background-color: #cce5ff;
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-left: 0.5em;
+}
+
+/* Visible focus state for interactive elements */
+*:focus {
+    outline-color: #0066cc;
+}
+
+/* Title styling with accessible heading */
+h1 {
+    font-size: 2em;
+    margin-bottom: 0.5em;
+    color: #333;
 }
